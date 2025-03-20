@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Password</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: "Inter", sans-serif;
+            background-color: #f7f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 0;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        fieldset {
+            border: none;
+            border-radius: 16px;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            background: linear-gradient(135deg, #ffffff 0%, #f9fbfc 100%);
+            width: 380px;
+            min-height: 300px;
+            box-sizing: border-box;
+        }
+
+        legend {
+            font-size: 28px;
+            font-weight: 800;
+            color: #000;
+            padding: 0;
+            letter-spacing: -0.5px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #536471;
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: "Inter", sans-serif;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus {
+            border-color: #00acee;
+            box-shadow: 0 0 5px rgba(0, 172, 238, 0.3);
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #8899a6;
+            font-family: "Inter", sans-serif;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: "Inter", sans-serif;
+            background-color: #00acee;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #0098d4;
+            transform: translateY(-1px);
+        }
+
+        .links {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .links a {
+            color: #00acee;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+            color: #0098d4;
+        }
+
+        .red {
+            color: #ff4d4f;
+            font-size: 13px;
+        }
+
+        .green {
+            color: #00b894;
+            font-size: 13px;
+        }
+
+        form h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #14171a;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <fieldset>
+            <legend>Set-Up Your Password</legend>
+            <form id="form">
+                <h3>Enter Details</h3>
+                <label for="password">Password: </label>
+                <input type="password" placeholder="Enter A Strong Password" id="password" name="password"><br><br>
+                <label for="repeatPassword">Repeat Password: </label>
+                <input type="password" placeholder="Repeat Your Password" id="repeatPassword" name="repeatPassword"><br><br>
+                <button>Set Password</button>
+                <p id="msg"></p>
+            </form>
+            <!-- <div class="links">
+                <a href="/signup">Create A New Account</a>
+                <a href="">Forget password</a>
+            </div> -->
+        </fieldset>
+    </div>
+
+    <script>
+        let token = localStorage.getItem("token");
+        let form = document.querySelector("#form");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            let responce = await fetch("/api/v1/user/Updatepass", {
+                method: "post",
+                body: formData,
+                headers: {
+                    "authorization": "Bearer " + token
+                }
+            });
+            console.log("responce From setPass js ", responce);
+            if (responce.status == 200) {
+                setTimeout(() => {
+                    window.location.href = "login";
+                }, 1000);
+            }
+
+            let data = await responce.json();
+            console.log("Data From setPass js ", data);
+
+            let msg = document.getElementById("msg");
+            if (data.success == true) {
+                localStorage.removeItem('token');
+                msg.setAttribute("class", "green");
+            } else {
+                msg.setAttribute("class", "red");
+            }
+            msg.innerHTML = data.message;
+        });
+    </script>
+</body>
+</html>

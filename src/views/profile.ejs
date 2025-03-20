@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", serif;
+        background-color: #f5f5f5;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+      }
+
+      /* Sidebar */
+      .left-panel {
+        width: 250px;
+        background-color: #fff;
+        border-right: 1px solid #e6ecf0;
+        padding: 20px;
+        position: fixed;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar a {
+        display: block;
+        padding: 10px;
+        color: #000;
+        text-decoration: none;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar a:hover {
+        background-color: #e6ecf0;
+        border-radius: 5px;
+      }
+
+      .logout-btn {
+        display: block;
+        padding: 10px;
+        background-color: #e0245e;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 18px;
+        text-align: start;
+        cursor: pointer;
+      }
+
+      .logout-btn:hover {
+        background-color: #c2185b;
+      }
+
+      .create-post {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e6ecf0;
+        border-radius: 5px;
+      }
+
+      .create-post h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .create-post textarea,
+      .create-post input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #e6ecf0;
+        border-radius: 5px;
+        font-family: "Inter", serif;
+      }
+
+      .create-post button {
+        padding: 8px 16px;
+        background-color: #1da1f2;
+        color: #fff;
+        font-family: Inter;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+      }
+
+      .create-post button:hover {
+        background-color: #0d95e8;
+      }
+
+      /* Main Content */
+      .main-content {
+        /* /* max-width: 700px; *  */
+        margin-left: 250px;
+        margin-right: 300px;
+        /* padding-right: 40px; */
+        flex: 1;
+        padding: 20px;
+      }
+
+      /* Profile Header */
+      .profile-header {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        border: 1px solid #e6ecf0;
+        margin-bottom: 20px;
+      }
+
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+
+      .profile-name {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .profile-username {
+        color: #657786;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .profile-bio {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+      .profile-stats {
+        display: flex;
+        gap: 20px;
+      }
+
+      .profile-stats span {
+        font-size: 14px;
+      }
+
+      .profile-stats span strong {
+        font-weight: 700;
+      }
+
+      /* Tweets Section */
+      .tweets-section {
+        margin-top: 20px;
+      }
+
+      .tweet {
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #e6ecf0;
+        display: none;
+      }
+
+      .tweet .timestamp {
+        color: #657786;
+        font-size: 14px;
+      }
+
+      .tweet .content {
+        margin-top: 5px;
+        font-size: 15px;
+      }
+
+      .tweet .media {
+        margin-top: 10px;
+        max-width: 100%;
+        border-radius: 5px;
+      }
+
+      /* following-container */
+      .following-panel {
+        width: 300px;
+        padding: 20px;
+        background-color: #fff;
+        border-left: 1px solid #e6ecf0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .following-panel h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .following-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #e6ecf0;
+        display: none;
+      }
+
+      .following-item .username {
+        font-weight: 600;
+      }
+
+      .unfollow-btn {
+        padding: 5px 10px;
+        background-color: #e0245e;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 15px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .unfollow-btn:hover {
+        opacity: 0.9;
+      }
+
+      .loading {
+        text-align: center;
+        color: #657786;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-panel">
+        <div class="sidebar">
+          <h2>Twitter Clone</h2>
+          <a href="http://localhost:4000/api/v1/dashboard">Home</a>
+          <a
+            href="http://localhost:4000/api/v1/dashboard/profilePicture/:userId"
+            id="profile"
+            >Profile</a
+          >
+          <a href="#">Messages</a>
+          <a href="#">Settings</a>
+          <span class="logout-btn">Logout</span>
+        </div>
+        <div class="create-post">
+          <h3>Create a Post</h3>
+          <form id="create-post-form">
+            <textarea
+              name="content"
+              placeholder="What's happening?"
+              rows="3"
+              required
+            ></textarea>
+            <input
+              type="text"
+              name="mediaURL"
+              placeholder="Media URL (optional)"
+            />
+            <button type="submit">Tweet</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="profile-header" id="profile-header">
+          <div class="loading" id="profile-loading">Loading profile...</div>
+        </div>
+
+        <div class="tweets-section">
+          <h2>Tweets</h2>
+          <div id="tweets-container"></div>
+          <div class="loading" id="tweets-loading">Loading tweets...</div>
+        </div>
+      </div>
+
+      <div class="following-panel">
+        <h3>Following</h3>
+        <div id="following-container"></div>
+        <div class="loading" id="following-loading">Loading following...</div>
+      </div>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      document.getElementById(
+        "profile"
+      ).href = `/api/v1/dashboard/profilePicture/${userId}`;
+      document.addEventListener("DOMContentLoaded", () => {
+        const userId = "<%= profileUserId %>";
+
+        fetch(`/api/v1/dashboard/profile-data/${userId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("data form profile.ejs", data);
+
+            if (data.success) {
+              const profileHeader = document.getElementById("profile-header");
+              const profileLoading = document.getElementById("profile-loading");
+              profileLoading.style.display = "none";
+
+              profileHeader.innerHTML = `${
+                data.user.ProfilePicture
+                  ? `<img src="/temp/${data.user.ProfilePicture}" alt="Profile Picture" class="profile-pic">`
+                  : '<div class="profile-pic" style="background-color: #e6ecf0;"></div>'
+              }
+
+                    <div class="profile-name">${data.user.FirstName} ${
+                data.user.LastName
+              }</div>
+                    <div class="profile-username">@${data.user.Username}</div>
+
+                     <div class="profile-bio">${
+                       data.user.Bio || "No bio available."
+                     }</div>
+                        <div class="profile-stats">
+                            <span><strong id="following-count">${
+                              data.followingCount
+                            }</strong> Following</span>
+                            <span><strong id="followers-count">${
+                              data.followersCount
+                            }</strong> Followers</span>
+                        </div>
+                    `;
+
+              const tweetsContainer =
+                document.getElementById("tweets-container");
+              const tweetsLoading = document.getElementById("tweets-loading");
+              tweetsLoading.styledisplay = "none";
+
+              if (data.tweets.length > 0) {
+                data.tweets.forEach((tweet) => {
+                  const tweetDiv = document.createElement("div");
+                  tweetDiv.className = "tweet";
+                  tweetDiv.innerHTML = `
+                                <div class="timestamp">${new Date(
+                                  tweet.CreatedAt
+                                ).toLocaleString()}</div>
+                                <div class="content">${tweet.Content}</div>
+                                ${
+                                  tweet.MediaURL
+                                    ? `<img src="${tweet.MediaURL}" alt="Tweet Media" class="media">`
+                                    : ""
+                                }
+                            `;
+                  tweetDiv.style.display = "block";
+                  tweetsContainer.appendChild(tweetDiv);
+                });
+              } else {
+                tweetsContainer.innerHTML = "<p>No tweets to display.</p>";
+              }
+
+              const followingContainer = document.getElementById(
+                "following-container"
+              );
+              const followingLoading =
+                document.getElementById("following-loading");
+              followingLoading.style.display = "none";
+              // followingContainer.innerHTML = "hello"
+              if (data.followingUsers.length > 0) {
+                data.followingUsers.forEach((user) => {
+                  // console.log("user", user);
+
+                  const followingDiv = document.createElement("div");
+                  followingDiv.className = "following-item";
+                  // console.log("data-user-id", user.UserID);
+
+                  followingDiv.setAttribute("data-user-id", user.UserID);
+                  followingDiv.innerHTML = `
+                            <div id="details">
+                                    <div class="username">${user.Username}</div>
+                                    <div class="name">${user.Firstname} ${user.LastName}</div>
+                                </div>
+                            <span class="unfollow-btn" data-user-id="${user.UserID}">Unfollow</span>`;
+
+                  followingDiv.style.display = "flex";
+                  followingContainer.appendChild(followingDiv);
+                });
+        
+                document.querySelectorAll(".unfollow-btn").forEach((btn) => {
+                  btn.addEventListener("click", (e) => {
+                    const followeeId = e.target.getAttribute("data-user-id");
+                    // console.log("hello",followeeId);
+
+                    fetch(
+                      `/api/v1/dashboard/unFollow/${followeeId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        console.log("daata2", data);
+
+                        if (data.success) {
+                          alert(data.message);
+
+                          fetch(
+                            `/api/v1/dashboard/profile-data/${userId}`,
+                            {
+                              method: "GET",
+                              headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                              },
+                            }
+                          )
+                            .then((response) => response.json())
+                            .then((updatedata) => {
+                              console.log(
+                                "updated data from profileejs",
+                                updatedata
+                              );
+
+                              if (updatedata.success) {
+                                document.getElementById(
+                                  "following-count"
+                                ).textContent = updatedata.followingCount;
+                                document.getElementById(
+                                  "followers-count"
+                                ).textContent = updatedata.followersCount;
+
+                                followingContainer.innerHTML = "";
+                                if (updatedata.followingUsers.length > 0) {
+                                  updatedata.followingUsers.forEach((user) => {
+                                    const followingDiv =
+                                      document.createElement("div");
+                                    followingDiv.className = "following-item";
+                                    followingDiv.setAttribute(
+                                      "data-user-id",
+                                      user.UserID
+                                    );
+                                    followingDiv.innerHTML = `
+                                                            <div class="username">${user.Username} (${user.Firstname} ${user.LastName})</div>
+                                                            <span class="unfollow-btn" data-user-id="${user.UserID}">Unfollow</span>
+                                                        `;
+                                    followingDiv.style.display = "block";
+                                    followingContainer.appendChild(
+                                      followingDiv
+                                    );
+                                  });
+
+                                  document
+                                    .querySelectorAll("unfollow-btn")
+                                    .forEach((btn) => {
+                                      button.addEventListener("click", (e) => {
+                                        const followeeId =
+                                          e.target.getAttribute("data-user-id");
+                                        fetch(
+                                          `/api/v1/dashboard/unFollow/${followeeId}`,
+                                          {
+                                            method: "GET",
+                                            headers: {
+                                              Authorization: `Bearer ${token}`,
+                                              "Content-Type":
+                                                "application/json",
+                                            },
+                                          }
+                                        )
+                                          .then((response) => response.json())
+                                          .then((data) => {
+                                            if (data.success) {
+                                              alert(data.message);
+                                              location.reload(); // Simplified reload for now
+                                            } else {
+                                              alert(
+                                                data.message || "Action failed!"
+                                              );
+                                            }
+                                          })
+                                          .catch((error) => {
+                                            console.error(
+                                              "Error unfollowing user:",
+                                              error
+                                            );
+                                            alert("Error unfollowing user!");
+                                          });
+                                      });
+                                    });
+                                } 
+                              }
+                            });
+                        }
+                      });
+                  });
+                });
+              }else {
+                                  followingContainer.innerHTML =
+                                    "<p>No one is being followed.</p>";
+                                }
+            } else {
+              alert(data.message || "Failed to load profile!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching profile data:", error);
+            document.getElementById("profile-loading").innerText =
+              "Error loading profile!";
+            document.getElementById("tweets-loading").innerText =
+              "Error loading tweets!";
+          });
+
+        const createPostForm = document.getElementById("create-post-form");
+        createPostForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(createPostForm);
+          // const content = formData.get('content');
+          // const mediaURL = formData.get('mediaURL');
+
+          fetch("/api/v1/dashboard/createPost", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert(data.message);
+                createPostForm.reset();
+                location.reload();
+              } else {
+                alert(data.message || "Failed to create tweet!");
+              }
+            })
+            .catch((error) => {
+              console.error("Error creating tweet:", error);
+              alert("Error creating tweet!");
+            });
+        });
+      });
+
+      //logOut
+      const logoutBtn = document.querySelector(".logout-btn");
+      logoutBtn.addEventListener("click", () => {
+        fetch("/api/v1/dashboard/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              localStorage.removeItem("token");
+              alert(data.message);
+              window.location.href = "/api/v1/user/login";
+            } else {
+              alert(data.message || "Failed to log out!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error logging out:", error);
+            alert("Error logging out!");
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", serif;
+        background-color: #f5f5f5;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+      }
+      .left-panel {
+        width: 250px;
+        background-color: #fff;
+        border-right: 1px solid #e6ecf0;
+        padding: 20px;
+        position: fixed;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      /* Sidebar */
+
+      .sidebar h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar a {
+        display: block;
+        padding: 10px;
+        color: #000;
+        text-decoration: none;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar a:hover {
+        background-color: #e6ecf0;
+        border-radius: 5px;
+      }
+
+      .logout-btn {
+        display: block;
+        padding: 10px;
+        background-color: #e0245e;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 18px;
+        text-align: start;
+        cursor: pointer;
+      }
+
+      .logout-btn:hover {
+        background-color: #c2185b;
+      }
+
+      .create-post {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e6ecf0;
+        border-radius: 5px;
+      }
+
+      .create-post h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .create-post textarea,
+      .create-post input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #e6ecf0;
+        border-radius: 5px;
+        font-family: "Inter", serif;
+      }
+
+      .create-post button {
+        padding: 8px 16px;
+        background-color: #1da1f2;
+        color: #fff;
+        font-family: Inter;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+      }
+
+      .create-post button:hover {
+        background-color: #0d95e8;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 250px;
+        flex: 1;
+        padding: 20px;
+        border-right: 1px solid #e6ecf0;
+      }
+
+      .tweet {
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 7px;
+        margin-top: 10px;
+        border: 1px solid #e6ecf0;
+        display: none; /* Hidden initially, shown after fetch */
+      }
+
+      .retweet-info {
+            font-size: 14px;
+            color: #657786;
+            margin-bottom: 5px;
+        }
+
+      .tweet .username {
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .tweet .timestamp {
+        color: #657786;
+        font-size: 14px;
+      }
+
+      .tweet .content {
+        margin-top: 5px;
+        font-size: 15px;
+      }
+
+      .tweet .media {
+        margin-top: 10px;
+        max-width: 100%;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+
+      .tweet-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .like-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 5px;
+      }
+
+      .like-btn.liked {
+        color: #e0245e;
+      }
+
+      .retweet-btn {
+        padding: 5px 10px;
+        background-color: #1da1f2;
+        color: #fff;
+        border: none;
+        font-family: Inter;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .retweet-btn:hover {
+        opacity: 0.9;
+      }
+
+      .tweet .like-count,
+      .tweet .retweet-count {
+        margin-left: 5px;
+        color: #657786;
+        font-size: 14px;
+      }
+
+      .suggestions {
+        width: 300px;
+        padding: 20px;
+        background-color: #fff;
+        border-left: 1px solid #e6ecf0;
+      }
+
+      .suggestions h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .suggestion {
+        display: flex;
+        align-items: center;
+        /* flex-direction: column; */
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #e6ecf0;
+        display: none;
+      }
+      .suggestion .username {
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .suggestion .name {
+        margin-bottom: 5px;
+      }
+
+      .suggestion .follow-btn {
+        padding: 5px 10px;
+        background-color: #1da1f2;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 15px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .suggestion .unfollow-btn {
+        padding: 5px 10px;
+        background-color: #e0245e;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 15px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .suggestion .follow-btn:hover,
+      .suggestion .unfollow-btn:hover {
+        opacity: 0.9;
+      }
+
+      .loading {
+        text-align: center;
+        color: #657786;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-panel">
+        <div class="sidebar">
+          <h2>Twitter Clone</h2>
+          <a href="http://localhost:4000/api/v1/dashboard">Home</a>
+          <a
+            href="http://localhost:4000/api/v1/dashboard/profilePicture/:userId"
+            id="profile"
+            >Profile</a
+          >
+          <a href="#">Messages</a>
+          <a href="#">Settings</a>
+          <span class="logout-btn">Logout</span>
+        </div>
+        <div class="create-post">
+          <h3>Create a Post</h3>
+          <form id="create-post-form">
+            <textarea
+              name="content"
+              placeholder="What's happening?"
+              rows="3"
+              required
+            ></textarea>
+            <input
+              type="text"
+              name="mediaURL"
+              placeholder="Media URL (optional)"
+            />
+            <button type="submit">Tweet</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <h2>Your Feed</h2>
+        <div id="tweets-container"></div>
+        <div class="loading" id="loading">Loading tweets...</div>
+      </div>
+
+      <div class="suggestions">
+        <h3>Who to Follow</h3>
+        <div id="suggestions-container"></div>
+        <div class="loading" id="suggestions-loading">
+          Loading suggestions...
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      document.getElementById(
+        "profile"
+      ).href = `/api/v1/dashboard/profilePicture/${userId}`;
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (!token) {
+          alert("Please log in to view the dashboard!");
+          window.location.href = "/api/v1/user/login";
+          return;
+        }
+
+        fetch("/api/v1/dashboard/dashboard-data", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("data from dashbord2", data);
+
+            if (data.success === false) {
+              localStorage.removeItem("token");
+              // alert("yugu",data.message)
+              location.href = "/api/v1/user/login";
+              return;
+            }
+
+            if (data.success) {
+              const tweetsContainer =
+                document.getElementById("tweets-container");
+              const loading = document.getElementById("loading");
+              loading.style.display = "none";
+
+              if (data.tweets.length > 0) {
+                data.tweets.forEach((tweet) => {
+                  const tweetDiv = document.createElement("div");
+                  tweetDiv.className = "tweet";
+                  tweetDiv.setAttribute("data-tweet-id", tweet.TweetID);
+                  tweetDiv.innerHTML = `
+                                                
+                                <div >${tweet?.RetweeterUsername ? '<div class="retweet-info">' +' Retweeted by '+ tweet.RetweeterUsername +  ' (' + tweet.RetweeterFirstname +' ' + tweet.RetweeterLastname + ')' +  '</div>' + '<div class="username">' + tweet.Username + ' ('+
+                    tweet.Firstname +' '
+                   + tweet.Lastname +')' + '</div>': '<div class="username">'+tweet.Username + ' ('+
+                    tweet.Firstname +' '
+                   + tweet.LastName +')' + '</div>'}</div>
+                                <div class="content">${tweet.Content}</div>
+                                ${
+                                  tweet.MediaURL
+                                    ? `<img src="${tweet.MediaURL}" alt="Tweet Media" class="media">`
+                                    : ""
+                                }
+                                <div class="timestamp">${new Date(
+                                  tweet.CreatedAt
+                                ).toLocaleString()}</div>
+                                <div class="tweet-actions"> 
+                                    <button class="like-btn ${
+                                      tweet.isLiked ? "liked" : ""
+                                    }" data-tweet-id="${tweet.TweetID}">
+                                        ${tweet.isLiked ? "❤️" : "🤍"}
+                                    </button>
+                                    <span class="like-count">${
+                                      tweet.likeCount
+                                    }</span>
+                                    <button class="retweet-btn" data-tweet-id="${
+                                      tweet.TweetID
+                                    }">Retweet</button>
+                                    <span class="retweet-count">${
+                                      tweet.retweetCount
+                                    }</span>
+                                    </div>
+                            `;
+                  tweetDiv.style.display = "block";
+                  tweetsContainer.appendChild(tweetDiv);
+                });
+
+                document.querySelectorAll(".like-btn").forEach((btn) => {
+                  btn.addEventListener("click", (e) => {
+                    const tweetId = e.target.getAttribute("data-tweet-id");
+                    const isLiked = e.target.classList.contains("liked");
+                    const action = isLiked ? "unlike" : "like";
+
+                    fetch(
+                      `/api/v1/dashboard/${action}/${tweetId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (data.success) {
+                          const likeCountSpan = e.target.nextElementSibling;
+                          let likeCount = parseInt(likeCountSpan.textContent);
+
+                          if (isLiked) {
+                            e.target.classList.remove("liked");
+                            e.target.textContent = "🤍";
+                            likeCountSpan.textContent = likeCount - 1;
+                          } else {
+                            e.target.classList.add("liked");
+                            e.target.textContent = "❤️";
+                            likeCountSpan.textContent = likeCount + 1;
+                          }
+                        } else {
+                          alert(data.message || "Action failed!");
+                        }
+                      })
+                      .catch((error) => {
+                        console.error(`Error ${action}ing tweet:`, error);
+                        alert(`Error ${action}ing tweet!`);
+                      });
+                  });
+                });
+
+                document.querySelectorAll(".retweet-btn").forEach((btn) => {
+                  btn.addEventListener("click", (e) => {
+                    const tweetId = e.target.getAttribute("data-tweet-id");
+
+                    fetch(
+                      `/api/v1/dashboard/retweet/${tweetId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (data.success) {
+                          const retweetCountSpan = e.target.nextElementSibling;
+                          let retweetCount = parseInt(retweetCountSpan.textContent);
+
+                          retweetCountSpan.textContent = retweetCount + 1;
+                          e.target.disabled = true;
+                          e.target.style.opacity = "0.2";
+                          alert(data.message);
+                          location.reload()
+                        } else {
+                          alert(data.message || "Action failed!");
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error retweeting tweet:", error);
+                        alert("Error retweeting tweet!");
+                      });
+                  });
+                }
+            );
+              } else {
+                tweetsContainer.innerHTML =
+                  "<p>No tweets to display. Add tweet to see tweets!</p>";
+              }
+            } else {
+              alert(data.message || "Failed to load tweets!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching tweets:", error);
+            document.getElementById("loading").innerText =
+              "Error loading tweets!";
+          });
+
+        // Fetch suggestions
+        fetch("/api/v1/dashboard/dashboard-data", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // console.log("data from dsahboard",data);
+
+            if (data.success) {
+              const suggestionsContainer = document.getElementById(
+                "suggestions-container"
+              );
+              const loading = document.getElementById("suggestions-loading");
+              loading.style.display = "none";
+
+              if (data.suggestions.length > 0) {
+                data.suggestions.forEach((user) => {
+                  const suggestionDiv = document.createElement("div");
+                  suggestionDiv.className = "suggestion";
+                  suggestionDiv.setAttribute("data-user-id", user.UserID);
+                  suggestionDiv.innerHTML = `
+                                <div id="details">
+                                    <div class="username">${user.Username}</div>
+                                    <div class="name">${user.Firstname} ${user.LastName}</div>
+                                </div> 
+                                <span class="follow-btn" data-user-id="${user.UserID}">Follow</span>
+                            `;
+                  suggestionDiv.style.display = "flex";
+                  suggestionsContainer.appendChild(suggestionDiv);
+                });
+                document.querySelectorAll(".follow-btn").forEach((btn) => {
+                  btn.addEventListener("click", (e) => {
+                    const followeeId = e.target.getAttribute("data-user-id");
+                    const isFollow = e.target.textContent === "Follow";
+
+                    fetch(
+                      `/api/v1/dashboard/${
+                        isFollow ? "Follow" : "unFollow"
+                      }/${followeeId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    )
+                      .then((responce) => responce.json())
+                      .then((data) => {
+                        if (data.success) {
+                          alert(data.message);
+                          e.target.textContent = isFollow
+                            ? "unFollow"
+                            : "Follow";
+                          e.target.className = isFollow
+                            ? "unfollow-btn"
+                            : "follow-btn";
+                          location.reload();
+                        } else {
+                          alert(data.message || "Action failedd.");
+                        }
+                      })
+                      .catch((error) => {
+                        console.error(
+                          `Error ${
+                            isFollow ? "following" : "unfollowing"
+                          } user:`,
+                          error
+                        );
+                        alert(
+                          `Error ${
+                            isFollow ? "following" : "unfollowing"
+                          } user!`
+                        );
+                      });
+                  });
+                });
+              } else {
+                suggestionsContainer.innerHTML =
+                  "<p>No suggestions available.</p>";
+              }
+            } else {
+              alert(data.message || "Failed to load suggestions!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching suggestions:", error);
+            document.getElementById("suggestions-loading").innerText =
+              "Error loading suggestions!";
+          });
+
+        //create Post
+        const createPostForm = document.getElementById("create-post-form");
+        createPostForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(createPostForm);
+          // const content = formData.get('content');
+          // const mediaURL = formData.get('mediaURL');
+
+          fetch("/api/v1/dashboard/createPost", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert(data.message);
+                createPostForm.reset();
+                location.reload();
+              } else {
+                alert(data.message || "Failed to create tweet!");
+              }
+            })
+            .catch((error) => {
+              console.error("Error creating tweet:", error);
+              alert("Error creating tweet!");
+            });
+        });
+      });
+
+      //logOut
+      const logoutBtn = document.querySelector(".logout-btn");
+      logoutBtn.addEventListener("click", () => {
+        fetch("/api/v1/dashboard/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              localStorage.removeItem("token");
+              alert(data.message);
+              window.location.href = "/api/v1/user/login";
+            } else {
+              alert(data.message || "Failed to log out!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error logging out:", error);
+            alert("Error logging out!");
+          });
+      });
+    </script>
+  </body>
+</html>
