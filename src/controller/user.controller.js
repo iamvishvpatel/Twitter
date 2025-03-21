@@ -23,7 +23,7 @@ const registerUser = async (req,res)=>{
     try {
         const connection = await db()
 
-        console.log(req.file);
+        // console.log(req.file);
         
 
         const [result] = await connection.query(`INSERT INTO Users (Username, Firstname, LastName, Email, Bio,ProfilePicture) VALUES (?, ?, ?, ?,?, ?)`,

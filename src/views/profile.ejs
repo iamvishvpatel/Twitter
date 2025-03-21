@@ -168,6 +168,9 @@
       .tweets-section {
         margin-top: 20px;
       }
+      .tweets-section h2{
+        margin-bottom: 7px;
+      }
 
       .tweet {
         background-color: #fff;
@@ -249,10 +252,10 @@
     <div class="container">
       <div class="left-panel">
         <div class="sidebar">
-          <h2>Twitter Clone</h2>
-          <a href="http://localhost:4000/api/v1/dashboard">Home</a>
+          <h2>Twitter</h2>
+          <a href="/api/v1/dashboard">Home</a>
           <a
-            href="http://localhost:4000/api/v1/dashboard/profilePicture/:userId"
+            href="/api/v1/dashboard/profilePicture/:userId"
             id="profile"
             >Profile</a
           >
@@ -350,8 +353,8 @@
               const tweetsContainer =
                 document.getElementById("tweets-container");
               const tweetsLoading = document.getElementById("tweets-loading");
-              tweetsLoading.styledisplay = "none";
-
+              
+              tweetsLoading.style.display = "none";
               if (data.tweets.length > 0) {
                 data.tweets.forEach((tweet) => {
                   const tweetDiv = document.createElement("div");
