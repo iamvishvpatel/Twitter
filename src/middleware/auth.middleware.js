@@ -25,16 +25,18 @@ const Authmiddleware = (req, res, next) => {
       }
       req.user = decoded;
       // console.log("decoded", decoded);
-      if(req.url.includes("VarifyAuth")){
-       return res.status(200).json({
-          user: decoded,
-          success: true,
-          message: "User is SccessFully Varified..."          
-        })
-      }
+      
      
     });
     
+    if(req.url.includes("VarifyAuth")){
+      return res.status(200).json({
+         user: decoded,
+         success: true,
+         message: "User is SccessFully Varified..."          
+       })
+     }
+     
     if(isvalid){
       // res.vishv = "patel"
       // console.log("401 .......",res.vishv);

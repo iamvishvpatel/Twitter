@@ -75,9 +75,8 @@ const renderRedirect = (req,res)=>{
 
 const UpdatePass = async (req,res)=>{
   let {password, repeatPassword} = req.body;
-
-
-  if (password < 6) {
+  
+  if (password.length < 6) {
     return res.status(501).json({
       success: false,
       message: "Password Length Must Be 6 Character Long..!",
