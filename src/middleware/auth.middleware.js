@@ -33,7 +33,7 @@ const Authmiddleware = (req, res, next) => {
       return res.status(200).json({
          user: req.user,
          success: true,
-         message: "User is SccessFully Varified..."          
+         message: "User is SccessFully Varified...."          
        })
      }
      
