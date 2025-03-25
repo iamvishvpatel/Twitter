@@ -31,7 +31,7 @@ const Authmiddleware = (req, res, next) => {
     
     if(req.url.includes("VarifyAuth")){
       return res.status(200).json({
-         user: decoded,
+         user: req.user,
          success: true,
          message: "User is SccessFully Varified..."          
        })
